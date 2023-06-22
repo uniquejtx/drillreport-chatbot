@@ -59,7 +59,7 @@ ENDPOINT_NAME = secret['ENDPOINT_NAME']
 AWS_SECRET_ACCESS_KEY = secret['AWS_SECRET_ACCESS_KEY']
 AWS_ACCESS_KEY_ID = secret['AWS_ACCESS_KEY_ID']
 ACCOUNT_NO=secret['ACCOUNT_NO']
-    
+
 @st.cache_data(persist=True)
 def query_endpoint(payload,endpoint_name):
     client = boto3.client('runtime.sagemaker',region_name=region_name)
@@ -163,7 +163,10 @@ def app():
             st.write(gen_text)
             
             ## parse SQL from generated text:
-            sql_code_content=parse_sqlquery(gen_text)
+            try:
+                sql_code_content=parse_sqlquery(gen_text)
+            except:
+                sql_code_content=gen_text
             sql_query=sql_code_content.replace("\\'","'").replace('\n',' ')
             #sql_query=st.text_area("SQL Query:",value=sql_query)
             sql_query=st.text_area(label="SQL Query:",value=sql_query,on_change=update_sqlquery,args=[sql_query],height=100)
