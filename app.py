@@ -8,7 +8,7 @@ from pyathena.pandas.cursor import PandasCursor
 import pandas as pd
 from botocore.exceptions import ClientError
 
-secret_name = "drillreportapp"
+secret_name = "drillreportapp1"
 region_name = "us-east-1"
 glue_database_name = 'drillingreport'
 table_name='kv'
@@ -52,7 +52,14 @@ def get_secret():
     secret = get_secret_value_response['SecretString']
 
     return secret
-   
+
+secret = get_secret()
+secret = json.loads(secret)
+ENDPOINT_NAME = secret['ENDPOINT_NAME']
+AWS_SECRET_ACCESS_KEY = secret['AWS_SECRET_ACCESS_KEY']
+AWS_ACCESS_KEY_ID = secret['AWS_ACCESS_KEY_ID']
+ACCOUNT_NO=secret['ACCOUNT_NO']
+    
 @st.cache_data(persist=True)
 def query_endpoint(payload,endpoint_name):
     client = boto3.client('runtime.sagemaker',region_name=region_name)
@@ -103,7 +110,7 @@ def get_table_schema():
                         """
     ## Run Athena query to get table schema:
     try:
-        conn=connect(s3_staging_dir='s3://aws-athena-query-results-us-east-1/staging/',
+        conn=connect(s3_staging_dir=f's3://aws-athena-query-results-{ACCOUNT_NO}-us-east-1/staging/',
             region_name=region_name,
             cursor_class=PandasCursor)
         df_schema=pd.read_sql(table_schema_query,conn)
@@ -114,11 +121,7 @@ def get_table_schema():
     return df_schema
     
 def app():
-    secret = get_secret()
-    secret = json.loads(secret)
-    ENDPOINT_NAME = secret['ENDPOINT_NAME']
-    AWS_SECRET_ACCESS_KEY = secret['AWS_SECRET_ACCESS_KEY']
-    AWS_ACCESS_KEY_ID = secret['AWS_ACCESS_KEY_ID']
+
     boto3.setup_default_session(region_name=region_name,
                                 aws_access_key_id=AWS_ACCESS_KEY_ID,
                                 aws_secret_access_key=AWS_SECRET_ACCESS_KEY)
@@ -165,7 +168,7 @@ def app():
             st.session_state.sql_query=sql_query
             ## Run Athena query:
             try:
-                conn=connect(s3_staging_dir='s3://aws-athena-query-results-us-east-1/staging/',
+                conn=connect(s3_staging_dir=f's3://aws-athena-query-results-{ACCOUNT_NO}-us-east-1/staging/',
                     region_name=region_name,
                     cursor_class=PandasCursor)
                 test=pd.read_sql(sql_query,conn)
@@ -187,7 +190,7 @@ def app():
             st.write("New SQL query :")
             st.write(sql_query)
             try:
-                conn=connect(s3_staging_dir='s3://aws-athena-query-results-us-east-1/staging/',
+                conn=connect(s3_staging_dir=f's3://aws-athena-query-results-{ACCOUNT_NO}-us-east-1/staging/',
                     region_name=region_name,
                     cursor_class=PandasCursor)
                 test=pd.read_sql(sql_query,conn)
