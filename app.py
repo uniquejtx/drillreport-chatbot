@@ -8,7 +8,6 @@ from pyathena.pandas.cursor import PandasCursor
 import pandas as pd
 from botocore.exceptions import ClientError
 
-#endpoint_name='hf-llm-falcon-7b-instruct-bf16-2023-06-19-20-52-29-028'
 secret_name = "drillreportapp"
 region_name = "us-east-1"
 glue_database_name = 'drillingreport'
@@ -104,7 +103,7 @@ def get_table_schema():
                         """
     ## Run Athena query to get table schema:
     try:
-        conn=connect(s3_staging_dir='s3://aws-athena-query-results-510289136015-us-east-1/staging/',
+        conn=connect(s3_staging_dir='s3://aws-athena-query-results-us-east-1/staging/',
             region_name=region_name,
             cursor_class=PandasCursor)
         df_schema=pd.read_sql(table_schema_query,conn)
@@ -166,7 +165,7 @@ def app():
             st.session_state.sql_query=sql_query
             ## Run Athena query:
             try:
-                conn=connect(s3_staging_dir='s3://aws-athena-query-results-510289136015-us-east-1/staging/',
+                conn=connect(s3_staging_dir='s3://aws-athena-query-results-us-east-1/staging/',
                     region_name=region_name,
                     cursor_class=PandasCursor)
                 test=pd.read_sql(sql_query,conn)
@@ -188,7 +187,7 @@ def app():
             st.write("New SQL query :")
             st.write(sql_query)
             try:
-                conn=connect(s3_staging_dir='s3://aws-athena-query-results-510289136015-us-east-1/staging/',
+                conn=connect(s3_staging_dir='s3://aws-athena-query-results-us-east-1/staging/',
                     region_name=region_name,
                     cursor_class=PandasCursor)
                 test=pd.read_sql(sql_query,conn)
