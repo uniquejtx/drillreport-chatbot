@@ -110,7 +110,9 @@ def get_table_schema():
                         """
     ## Run Athena query to get table schema:
     try:
-        conn=connect(s3_staging_dir=f's3://aws-athena-query-results-{ACCOUNT_NO}-us-east-1/staging/',
+        conn=connect(aws_access_key_id=AWS_ACCESS_KEY_ID,
+                     aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+            s3_staging_dir=f's3://aws-athena-query-results-{ACCOUNT_NO}-us-east-1/staging/',
             region_name=region_name,
             cursor_class=PandasCursor)
         df_schema=pd.read_sql(table_schema_query,conn)
@@ -168,7 +170,9 @@ def app():
             st.session_state.sql_query=sql_query
             ## Run Athena query:
             try:
-                conn=connect(s3_staging_dir=f's3://aws-athena-query-results-{ACCOUNT_NO}-us-east-1/staging/',
+                conn=connect(aws_access_key_id=AWS_ACCESS_KEY_ID,
+                     aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+                    s3_staging_dir=f's3://aws-athena-query-results-{ACCOUNT_NO}-us-east-1/staging/',
                     region_name=region_name,
                     cursor_class=PandasCursor)
                 test=pd.read_sql(sql_query,conn)
@@ -190,9 +194,11 @@ def app():
             st.write("New SQL query :")
             st.write(sql_query)
             try:
-                conn=connect(s3_staging_dir=f's3://aws-athena-query-results-{ACCOUNT_NO}-us-east-1/staging/',
-                    region_name=region_name,
-                    cursor_class=PandasCursor)
+                conn=connect(aws_access_key_id=AWS_ACCESS_KEY_ID,
+                     aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+                        s3_staging_dir=f's3://aws-athena-query-results-{ACCOUNT_NO}-us-east-1/staging/',
+                        region_name=region_name,
+                        cursor_class=PandasCursor)
                 test=pd.read_sql(sql_query,conn)
                 athena_response=str(test.values.tolist())
             except:
